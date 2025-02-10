@@ -1,0 +1,105 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id                      Int       @id @default(autoincrement())
+  uuid                    String    @default(uuid()) @unique
+  name                    String
+  email                   String    @unique
+  password                String    
+  phone                   String?   @unique
+  verified_at             DateTime?
+  verify_token            String?   
+  token_forgot_password   String?   
+  role_id                 Int?
+  role                    Roles?    @relation(fields: [role_id], references: [id])
+  teacher_schedules       TeacherSchedules[]
+  transactions            Transactions[]
+  notifications           Notifications[]
+  created_at              DateTime  @default(now())
+  updated_at              DateTime  @default(now())
+}
+
+model Roles {
+  id            Int       @id @default(autoincrement())
+  uuid          String    @default(uuid()) @unique
+  name          String
+  value         String    @unique
+  users         Users[]
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @default(now())
+}
+
+model TeacherSchedules {
+  id            Int       @id @default(autoincrement())
+  uuid          String    @default(uuid()) @unique
+  teacher_id    Int
+  teacher       Users?    @relation(fields: [teacher_id], references: [id])
+  available_at  DateTime  @db.Date
+  start_at      DateTime  @db.Time      
+  end_at        DateTime  @db.Time
+  transactions  Transactions[]
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @default(now())
+  deleted_at    DateTime?
+}
+
+model Transactions {
+  id            Int       @id @default(autoincrement())
+  uuid          String    @default(uuid()) @unique
+  student_id    Int
+  student       Users?    @relation(fields: [student_id], references: [id])
+  schedule_id   Int
+  schedule      TeacherSchedules?    @relation(fields: [schedule_id], references: [id])
+  amount        Float
+  unique_code   Int
+  status_id     Int
+  status        TransactionStatus?    @relation(fields: [status_id], references: [id])
+  payments      Payments[]
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @default(now())
+}
+
+model Payments {
+  id              Int       @id @default(autoincrement())
+  uuid            String    @default(uuid()) @unique
+  transaction_id  Int
+  transaction     Transactions?    @relation(fields: [transaction_id], references: [id])
+  payment_at      DateTime
+  amount          Float
+  payment_method  String 
+}
+
+model TransactionStatus {
+  id            Int       @id @default(autoincrement())
+  uuid          String    @default(uuid()) @unique
+  title         String
+  value         String
+  transactions  Transactions[]
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @default(now())
+}
+
+model Notifications {
+  id            Int       @id @default(autoincrement())
+  uuid          String    @default(uuid()) @unique
+  title         String?
+  content       String
+  image         String?
+  user_id       Int?
+  user          Users?    @relation(fields: [user_id], references: [id])
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @default(now())
+}
