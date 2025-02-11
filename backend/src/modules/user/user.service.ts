@@ -31,6 +31,7 @@ export class UserService {
           name: true,
           email: true,
           phone: true,
+          verified_at: true,
           role: {
             select: {
               id: true,
