@@ -1,53 +1,9 @@
 'use client'
 
-import Link from 'next/link'
-import {
-  Book,
-  GraduationCap,
-  Users,
-  Play,
-  CheckCircle,
-  Globe
-} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Header from '@/components/header'
-
-const features = [
-  {
-    icon: Book,
-    title: "Materi Berkualitas",
-    description: "Kurikulum komprehensif yang disusun oleh para ahli di bidangnya"
-  },
-  {
-    icon: GraduationCap,
-    title: "Sertifikasi Resmi",
-    description: "Dapatkan sertifikat yang diakui industri setelah menyelesaikan kursus"
-  },
-  {
-    icon: Users,
-    title: "Komunitas Belajar",
-    description: "Bergabung dengan komunitas belajar yang aktif dan mendukung"
-  }
-]
-
-const courses = [
-  {
-    title: "Pemrograman Web",
-    description: "Kuasai teknologi web terkini dari dasar hingga lanjutan",
-    icon: Globe
-  },
-  {
-    title: "Data Science",
-    description: "Pelajari analisis data dan machine learning",
-    icon: CheckCircle
-  },
-  {
-    title: "Desain Grafis",
-    description: "Kembangkan keterampilan desain profesional",
-    icon: Play
-  }
-]
+import { courses, features } from '@/resources/data/landing-page'
 
 export default function LandingPage() {
   return (
