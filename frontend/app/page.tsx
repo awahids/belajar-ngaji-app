@@ -4,7 +4,7 @@ import Image from "next/image";
 const items = [
   { href: '/', title: 'Home' },
   { href: '/login', title: 'Login' },
-  { href: '/contact', title: 'Contact' }
+  { href: '/signup', title: 'Signup' }
 ]
 
 export default function Home() {
