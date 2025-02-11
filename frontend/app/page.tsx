@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Header from '@/components/header'
 import { courses, features } from '@/resources/data/landing-page'
 
-export default function LandingPage() {
+export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
