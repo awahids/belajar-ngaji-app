@@ -11,7 +11,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import SignupDialog from './signup-form'
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -29,7 +28,7 @@ export default function LoginDialog({ open, onOpenChange }: LoginDialogProps) {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
-  const [showSignupDialog, setShowSignupDialog] = useState(false) // Tambahkan state untuk signup dialog
+  const [, setShowSignupDialog] = useState(false)
 
   const form = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),

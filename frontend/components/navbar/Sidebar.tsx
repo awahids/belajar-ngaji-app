@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Home, BookOpen, Users, History } from 'lucide-react';
+import { Menu, X, Home, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function Sidebar({ children }: { children: React.ReactNode }) {

@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import Header from '@/components/header'
+import Header from '@/components/navbar/Header'
 import { courses, features } from '@/resources/data/landing-page'
 
 export default function Home() {

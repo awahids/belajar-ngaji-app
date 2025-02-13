@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import LoginDialog from './login-form'
-import SignupDialog from './signup-form'
+import LoginDialog from '../auth/LoginForm'
+import SignupDialog from '../auth/SignupForm'
 
 const menus = [
   {

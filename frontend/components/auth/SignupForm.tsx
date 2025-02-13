@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Eye, EyeOff, Mail, Lock, Phone, User } from 'lucide-react'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { useForm } from 'react-hook-form'
@@ -62,7 +61,7 @@ export default function SignupDialog({ open, onOpenChange }: SignupDialogProps) 
       } else {
         setErrorMessage(result.message || 'Registration failed');
       }
-    } catch (error) {
+    } catch {
       setErrorMessage('An error occurred. Please try again.');
     } finally {
       setIsLoading(false);

@@ -1,6 +1,6 @@
 'use client'
 
-import UserTable from '@/components/list-users'
+import UserTable from '@/components/users/ListUser'
 
 export default function ListUsers() {
 

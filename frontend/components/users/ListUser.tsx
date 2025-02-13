@@ -16,7 +16,7 @@ import {
   CardTitle
 } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from './ui/badge'
+import { Badge } from '../ui/badge'
 
 // Define a User type
 type User = {
