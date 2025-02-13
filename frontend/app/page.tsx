@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Header from '@/components/header'
@@ -25,9 +26,12 @@ export default function Home() {
           </div>
         </div>
         <div className="hidden md:block">
-          <img
-            src="/images/aw.png?height=500&width=500"
+          <Image
+            src="/images/aw.png"
             alt="Education Illustration"
+            width={500}
+            height={500}
+            priority
             className="w-full h-auto"
           />
         </div>
@@ -98,7 +102,9 @@ export default function Home() {
           </p>
           <div className="flex justify-center space-x-6">
             <Button size="lg">Gabung Sekarang</Button>
-            <Button variant="outline" size="lg" className='text-primary'>Lihat Kursus</Button>
+            <Button variant="outline" size="lg" className="text-primary">
+              Lihat Kursus
+            </Button>
           </div>
         </div>
       </section>

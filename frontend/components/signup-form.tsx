@@ -2,228 +2,143 @@
 
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Eye, EyeOff } from 'lucide-react'
-import { Form } from './ui/form'
+import { Eye, EyeOff, Mail, Lock, Phone, User } from 'lucide-react'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
 
-export default function SignupForm() {
-  const router = useRouter()
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    name: '',
-    phone: ''
-  })
-  const [errors, setErrors] = useState({
-    email: '',
-    password: '',
-    name: '',
-    phone: '',
-    form: ''
-  })
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+const signupSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string()
+    .min(8, 'Password must be at least 8 characters')
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+    .regex(/[0-9]/, 'Password must contain at least one number'),
+  name: z.string().min(1, 'Name is required'),
+  phone: z.string().min(1, 'Phone is required'),
+});
 
-  const form = useForm({
+type SignupSchema = z.infer<typeof signupSchema>;
+
+interface SignupDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+export default function SignupDialog({ open, onOpenChange }: SignupDialogProps) {
+  const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const form = useForm<SignupSchema>({
+    resolver: zodResolver(signupSchema),
     defaultValues: {
       email: '',
       password: '',
       name: '',
       phone: ''
     }
-  })
+  });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }))
-    // Clear error when user starts typing
-    setErrors(prev => ({
-      ...prev,
-      [name]: ''
-    }))
-  }
-
-  const validateForm = () => {
-    const newErrors = {
-      email: '',
-      password: '',
-      name: '',
-      phone: '',
-      form: ''
-    }
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!formData.email) {
-      newErrors.email = 'Email is required'
-    } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = 'Invalid email format'
-    }
-
-    // Password validation
-    if (!formData.password) {
-      newErrors.password = 'Password is required'
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters'
-    }
-
-    // Name validation
-    if (!formData.name) {
-      newErrors.name = 'Name is required'
-    }
-
-    // Phone validation
-    if (!formData.phone) {
-      newErrors.phone = 'Phone is required'
-    }
-
-    setErrors(newErrors)
-    return Object.values(newErrors).every(error => error === '')
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (validateForm()) {
-      setIsLoading(true)
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/register/student`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formData),
-        })
-
-        const data = await response.json()
-
-        if (data.success) {
-          console.log('Registration successful', data)
-          // Redirect to home page
-          router.push('/')
-        } else {
-          setErrors(prev => ({
-            ...prev,
-            form: data.message || 'Registration failed'
-          }))
-        }
-      } catch (error) {
-        console.error('Registration failed', error)
-        setErrors(prev => ({
-          ...prev,
-          form: 'An error occurred. Please try again.'
-        }))
-      } finally {
-        setIsLoading(false)
+  const handleSubmit = async (data: SignupSchema) => {
+    setIsLoading(true);
+    setErrorMessage('');
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/register/student`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      const result = await response.json();
+      if (result.success) {
+        onOpenChange(false);
+        router.push('/');
+      } else {
+        setErrorMessage(result.message || 'Registration failed');
       }
+    } catch (error) {
+      setErrorMessage('An error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className='text-2xl'>Create an Account</CardTitle>
-          <CardDescription>Register to start your journey</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  type="text"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Enter your name"
-                  className={errors.name ? 'border-destructive' : ''}
-                />
-                {errors.name && (
-                  <p className="text-xs text-destructive mt-1">{errors.name}</p>
-                )}
-              </div>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className='p-6 max-w-md w-full'>
+        <DialogHeader>
+          <DialogTitle>Create an Account</DialogTitle>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4'>
+            <FormField control={form.control} name='name' render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <div className='relative'>
+                    <User className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
+                    <Input {...field} placeholder='Enter your name' className='pl-10' />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
 
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Enter your email"
-                  className={errors.email ? 'border-destructive' : ''}
-                />
-                {errors.email && (
-                  <p className="text-xs text-destructive mt-1">{errors.email}</p>
-                )}
-              </div>
+            <FormField control={form.control} name='email' render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <div className='relative'>
+                    <Mail className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
+                    <Input {...field} placeholder='you@example.com' className='pl-10' />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
 
-              <div className="relative">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Create a password"
-                  className={errors.password ? 'border-destructive' : ''}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-2 top-8 text-muted-foreground"
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-                {errors.password && (
-                  <p className="text-xs text-destructive mt-1">{errors.password}</p>
-                )}
-              </div>
+            <FormField control={form.control} name='password' render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <div className='relative'>
+                    <Lock className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
+                    <Input {...field} type={showPassword ? 'text' : 'password'} placeholder='Create a password' className='pl-10 pr-10' />
+                    <Button type='button' variant='ghost' size='icon' className='absolute right-1 top-1/2 -translate-y-1/2' onClick={() => setShowPassword(!showPassword)}>
+                      {showPassword ? <EyeOff className='h-4 w-4' /> : <Eye className='h-4 w-4' />}
+                    </Button>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
 
-              <div>
-                <Label htmlFor="phone">Phone</Label>
-                <Input
-                  id="phone"
-                  name="phone"
-                  type="text"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  placeholder="Enter your phone number"
-                  className={errors.phone ? 'border-destructive' : ''}
-                />
-                {errors.phone && (
-                  <p className="text-xs text-destructive mt-1">{errors.phone}</p>
-                )}
-              </div>
+            <FormField control={form.control} name='phone' render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone</FormLabel>
+                <FormControl>
+                  <div className='relative'>
+                    <Phone className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
+                    <Input {...field} placeholder='Enter your phone number' className='pl-10' />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Registering...' : 'Create Account'}
-              </Button>
-              {errors.form && (
-                <p className="text-xs text-destructive mt-1">{errors.form}</p>
-              )}
-            </form>
-          </Form>
-
-          <div className="mt-4 text-center text-sm">
-            Already have an account?{' '}
-            <a href="/login" className="text-primary hover:underline">
-              Log in
-            </a>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  )
+            <Button type='submit' className='w-full' disabled={isLoading}>
+              {isLoading ? 'Registering...' : 'Create Account'}
+            </Button>
+            {errorMessage && <p className='text-xs text-destructive mt-1'>{errorMessage}</p>}
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
 }
