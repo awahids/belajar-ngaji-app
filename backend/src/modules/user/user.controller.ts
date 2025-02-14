@@ -1,4 +1,4 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
 import {
   errorResponse,
   successResponse,
@@ -7,6 +7,7 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { UserService } from './user.service';
 import { Filter, UuidDto } from '@/common/dto.common';
+import { Request } from 'express';
 
 @ApiBearerAuth('access-token')
 @UseGuards(JwtAuthGuard)
@@ -33,6 +34,20 @@ export class UserController {
       const data = await this.userService.userDetails(dto);
 
       return successResponse({ data });
+    } catch (error) {
+      return errorResponse(error.message, error.status);
+    }
+  }
+
+  @Get('/user/profile')
+  @UseGuards(JwtAuthGuard)
+  async me(@Req() req: Request) {
+    try {
+      return successResponse({
+        data: {
+          user: req.user,
+        },
+      });
     } catch (error) {
       return errorResponse(error.message, error.status);
     }

@@ -46,19 +46,4 @@ export class AuthController {
       return errorResponse(error.message, error.status);
     }
   }
-
-  @ApiBearerAuth('access-token')
-  @Get('me')
-  @UseGuards(JwtAuthGuard)
-  async me(@Req() req: Request) {
-    try {
-      return successResponse({
-        data: {
-          user: req.user,
-        },
-      });
-    } catch (error) {
-      return errorResponse(error.message, error.status);
-    }
-  }
 }
