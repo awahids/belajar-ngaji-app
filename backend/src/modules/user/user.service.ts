@@ -81,6 +81,10 @@ export class UserService {
       },
     });
 
+    if (!user) {
+      return errorResponse('Email not registered');
+    }
+
     return user;
   }
 
