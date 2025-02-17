@@ -27,7 +27,7 @@ export default function Home() {
         </div>
         <div className="hidden md:block">
           <Image
-            src="/images/aw.png"
+            src="/images/hero.jpeg"
             alt="Education Illustration"
             width={500}
             height={500}
